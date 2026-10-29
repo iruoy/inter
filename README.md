@@ -37,7 +37,7 @@ Using Inter on a web page:
 ```css
 :root { font-family: 'Inter', sans-serif; }
 @supports (font-variation-settings: normal) {
-  :root { font-family: 'Inter var', sans-serif; }
+  :root { font-family: 'InterVariable', sans-serif; font-optical-sizing: auto; }
 }
 ```
 
