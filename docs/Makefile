@@ -1,7 +1,7 @@
 SRCDIR  := $(abspath $(lastword $(MAKEFILE_LIST))/../..)
 FONTDIR := ../build/fonts
-BIN     := $(SRCDIR)/build/venv/bin
-VENV    := ../build/venv/bin/activate
+BIN     := $(SRCDIR)/.venv/bin
+VENV    := ../.venv/bin/activate
 Q = $(if $(filter 1,$(V) $(VERBOSE)),,@)  # make V=1 for verbose mode
 export PATH := $(BIN):$(PATH)
 

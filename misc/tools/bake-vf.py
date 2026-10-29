@@ -14,11 +14,11 @@ How to debug/develop this script:
 
 2. after making changes, run script and inspect with ttx:
 
-  (. build/venv/bin/activate && mkdir -p build/bake &&
+  (. .venv/bin/activate && mkdir -p build/bake &&
     for f in build/fonts/var/.Inter-*.var.ttf; do
       python misc/tools/bake-vf.py "$f" -o build/bake/"$(basename "${f/.Inter/Inter}")"
     done)
-  (. build/venv/bin/activate && ttx -t STAT -i -f -s build/bake/Inter-*.var.ttf)
+  (. .venv/bin/activate && ttx -t STAT -i -f -s build/bake/Inter-*.var.ttf)
 
 """
 import sys, os, os.path, re, argparse

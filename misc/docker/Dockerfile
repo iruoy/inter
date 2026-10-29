@@ -31,7 +31,7 @@ RUN apt-get -y autoremove \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-ENV PATH=/inter/build/venv/bin:$PATH
+ENV PATH=/inter/.venv/bin:$PATH
 
 VOLUME /host
 

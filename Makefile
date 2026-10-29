@@ -5,7 +5,7 @@ endif
 SRCDIR   := $(abspath $(lastword $(MAKEFILE_LIST))/..)
 FONTDIR  := build/fonts
 UFODIR   := build/ufo
-VENVDIR  := $(SRCDIR)/build/venv
+VENVDIR  := $(SRCDIR)/.venv
 VERSION  := $(shell cat version.txt)
 MAKEFILE := $(lastword $(MAKEFILE_LIST))
 
@@ -594,16 +594,15 @@ list:
 
 venv: $(VENVDIR)/config2.stamp
 
-$(VENVDIR)/config2.stamp: Pipfile.lock Pipfile
+$(VENVDIR)/config2.stamp: pyproject.toml uv.lock
 	@mkdir -p build
 	[ ! -f "$(VENVDIR)/config.stamp" ] || rm -rf "$(VENVDIR)"
-	[ -d "$(VENVDIR)" ] || python3 -m venv "$(VENVDIR)"
-	pip install pipenv==2023.8.28
-	pipenv install
+	uv sync --locked
 	touch $@
 
 venv-update:
-	pipenv update
+	uv lock --upgrade
+	uv sync
 
 reset: clean
 	rm -rf "$(VENVDIR)"

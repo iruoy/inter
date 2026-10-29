@@ -1,0 +1,20 @@
+[project]
+name = "inter-build"
+version = "0.0.0"
+description = "Build toolchain for the Inter typeface"
+# fonttools follows NumPy's minimum Python schedule (NEP 29)
+requires-python = ">=3.8"
+dependencies = [
+    "brotli==1.0.*",
+    "fontbakery==0.10.*",
+    "fontmake==3.9.*",
+    "gftools>=0.9.57",
+    "glyphspkg==0.1.*",
+    "psautohint==2.4.*",
+    "skia-pathops==0.8.*",
+    "ufo2ft>=2.30.0",
+]
+
+[tool.uv]
+# This is a toolchain environment, not an installable package
+package = false

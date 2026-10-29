@@ -18,6 +18,7 @@ nohup.out
 .vscode/
 
 build
+.venv
 /_*
 /githash.txt
 

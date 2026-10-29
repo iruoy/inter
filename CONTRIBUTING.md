@@ -66,7 +66,7 @@ Run QA tests:
 make test
 ```
 
-Currently the toolchain has only been tested on macOS and Linux. All you need to have preinstalled is [Python 3](https://www.python.org/downloads/).
+Currently the toolchain has only been tested on macOS and Linux. All you need to have preinstalled is [uv](https://docs.astral.sh/uv/getting-started/installation/), which sets up Python and the build tools in `.venv` for you. To update the tools to their latest allowed versions, run `make venv-update`.
 
 
 ### Recommended development workflow
