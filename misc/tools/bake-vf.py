@@ -331,8 +331,8 @@ def add_unhinted_rendering_tables(ttfont):
   # The variable fonts are not hinted. Add a gasp table that smooths all sizes
   # and a prep program that turns on smart dropout control, so they render
   # well on Windows. Same as `gftools fix-nonhinting`.
-  if "fpgm" in ttfont:
-    return  # hinted font; leave alone
+  if "glyf" not in ttfont or "fpgm" in ttfont:
+    return  # not TrueType, or hinted; leave alone
   gasp = newTable("gasp")
   gasp.gaspRange = {0xFFFF: 0x000F}
   ttfont["gasp"] = gasp
