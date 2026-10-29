@@ -168,9 +168,7 @@ def font_is_italic(ttfont):
 
 def set_full_name(font, fullName, fullNamePs):
   nameTable = font["name"]
-  nameTable.setName(fullName, FULL_NAME, 1, 0, 0)     # mac
   nameTable.setName(fullName, FULL_NAME, 3, 1, 0x409) # windows
-  nameTable.setName(fullNamePs, POSTSCRIPT_NAME, 1, 0, 0)     # mac
   nameTable.setName(fullNamePs, POSTSCRIPT_NAME, 3, 1, 0x409) # windows
 
 
@@ -308,7 +306,6 @@ def setFamilyName(font, nextFamilyName):
     varPSNamePrefix = remove_whitespace(nextFamilyName)
     if font_is_italic(font):
       varPSNamePrefix += 'Italic'
-    nameTable.setName(varPSNamePrefix, VAR_PS_NAME_PREFIX, 1, 0, 0)     # mac
     nameTable.setName(varPSNamePrefix, VAR_PS_NAME_PREFIX, 3, 1, 0x409) # windows
 
 
@@ -323,7 +320,7 @@ def gen_stat(ttfont):
   #buildStatTable(ttfont, stat_axes_format_2(font_is_italic(ttfont)))
   #
   # build a version 1.1 STAT table with format 1 and 3 records:
-  buildStatTable(ttfont, stat_axes_format_3(font_is_italic(ttfont)))
+  buildStatTable(ttfont, stat_axes_format_3(font_is_italic(ttfont)), macNames=False)
   #
   # build a version 1.2 STAT table with format 4 records:
   #locations = stat_locations(font_is_italic(ttfont))

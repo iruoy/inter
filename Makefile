@@ -386,9 +386,6 @@ FBAKE_DISABLED_STATIC += opentype/STAT/ital_axis
 FBAKE_DISABLED += base_has_width
 # "The following glyphs had zero advance width: uni0488 (U+0488), uni0489 (U+0489)"
 
-FBAKE_DISABLED += no_mac_entries
-# "Ensure font doesn't have Mac name table entries (platform=1)"
-
 # FBAKE_ARGS are common args for all fontbakery targets
 FBAKE_ARGS = \
 	check-universal \
