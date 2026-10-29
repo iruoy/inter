@@ -950,5 +950,6 @@ nodes = (
 width = 0;
 }
 );
+subCategory = Nonspacing;
 unicode = 1160;
 }

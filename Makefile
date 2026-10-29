@@ -383,9 +383,6 @@ FBAKE_DISABLED_STATIC += opentype/STAT/ital_axis
 # "Ensure VFs have 'ital' STAT axis" -- also runs on static fonts, which have
 # no STAT table. The variable fonts pass it.
 
-FBAKE_DISABLED += base_has_width
-# "The following glyphs had zero advance width: uni0488 (U+0488), uni0489 (U+0489)"
-
 # FBAKE_ARGS are common args for all fontbakery targets
 FBAKE_ARGS = \
 	check-universal \
