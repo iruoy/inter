@@ -389,10 +389,6 @@ FBAKE_DISABLED += base_has_width
 FBAKE_DISABLED += no_mac_entries
 # "Ensure font doesn't have Mac name table entries (platform=1)"
 
-FBAKE_DISABLED += smart_dropout
-# "The 'prep' table does not contain TrueType instructions enabling
-#  smart dropout control"
-
 # FBAKE_ARGS are common args for all fontbakery targets
 FBAKE_ARGS = \
 	check-universal \

@@ -22,7 +22,8 @@ How to debug/develop this script:
 
 """
 import sys, os, os.path, re, argparse
-from fontTools.ttLib import TTFont
+from fontTools.ttLib import TTFont, newTable
+from fontTools.ttLib.tables import ttProgram
 from fontTools.otlLib.builder import buildStatTable
 
 FLAG_DEFAULT = 0x2  # elidable value, effectively marks a location as default
@@ -329,6 +330,22 @@ def gen_stat(ttfont):
   #buildStatTable(ttfont, STAT_AXES, locations=locations)
 
 
+def add_unhinted_rendering_tables(ttfont):
+  # The variable fonts are not hinted. Add a gasp table that smooths all sizes
+  # and a prep program that turns on smart dropout control, so they render
+  # well on Windows. Same as `gftools fix-nonhinting`.
+  if "fpgm" in ttfont:
+    return  # hinted font; leave alone
+  gasp = newTable("gasp")
+  gasp.gaspRange = {0xFFFF: 0x000F}
+  ttfont["gasp"] = gasp
+  program = ttProgram.Program()
+  program.fromAssembly(["PUSHW[]", "511", "SCANCTRL[]", "PUSHB[]", "4", "SCANTYPE[]"])
+  prep = newTable("prep")
+  prep.program = program
+  ttfont["prep"] = prep
+
+
 def check_fvar(ttfont):
   fvar = ttfont['fvar']
   ok = True
@@ -399,6 +416,9 @@ def main():
 
   # build STAT table
   gen_stat(ttfont)
+
+  # gasp & prep tables for better rendering of unhinted fonts
+  add_unhinted_rendering_tables(ttfont)
 
   # check fvar table
   if not check_fvar(ttfont):
