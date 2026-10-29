@@ -16,20 +16,20 @@ name = ital_gen;
 shapes = (
 {
 alignment = -1;
-pos = (169,0);
+pos = (165,0);
 ref = one.ss01;
 },
 {
 closed = 1;
 nodes = (
-(1054,0,l),
-(1080,160,l),
-(159,160,l),
-(133,0,l)
+(1050,0,l),
+(1076,160,l),
+(155,160,l),
+(129,0,l)
 );
 }
 );
-width = 1328;
+width = 1320;
 },
 {
 background = {

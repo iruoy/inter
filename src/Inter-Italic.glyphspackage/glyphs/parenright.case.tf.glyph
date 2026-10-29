@@ -15,7 +15,7 @@ pos = (15,93);
 ref = parenright.tf;
 }
 );
-width = 801;
+width = 800;
 },
 {
 layerId = m012;
@@ -39,7 +39,7 @@ pos = (16,94);
 ref = parenright.tf;
 }
 );
-width = 799;
+width = 800;
 },
 {
 layerId = m008;
@@ -63,7 +63,7 @@ pos = (16,94);
 ref = parenright.tf;
 }
 );
-width = 784;
+width = 800;
 },
 {
 layerId = m010;

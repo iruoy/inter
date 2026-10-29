@@ -35,7 +35,7 @@ pos = (-12,0);
 ref = bracketright;
 }
 );
-width = 801;
+width = 800;
 },
 {
 layerId = m008;

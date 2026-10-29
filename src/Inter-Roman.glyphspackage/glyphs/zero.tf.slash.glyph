@@ -11,11 +11,11 @@ ref = zero.tf;
 },
 {
 alignment = -1;
-pos = (23,0);
+pos = (19,0);
 ref = _part.zeroslash;
 }
 );
-width = 1328;
+width = 1320;
 },
 {
 layerId = "5C20EF92-B63D-42A8-8878-93C2863E0093";
