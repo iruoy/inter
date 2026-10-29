@@ -26,5 +26,6 @@ layerId = m011;
 width = 0;
 }
 );
+production = uniFEFF;
 unicode = 65279;
 }
