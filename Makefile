@@ -177,31 +177,39 @@ AUTOHINT_ARGS := --stem-width-mode=qqq --no-info
 
 $(FONTDIR)/static-hinted/Inter-Regular.ttf: $(FONTDIR)/static/Inter-Regular.ttf | $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/InterDisplay-Regular.ttf: $(FONTDIR)/static/InterDisplay-Regular.ttf | $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/Inter-Italic.ttf: $(FONTDIR)/static/Inter-Italic.ttf | $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/InterDisplay-Italic.ttf: $(FONTDIR)/static/InterDisplay-Italic.ttf | $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/InterDisplay-%Italic.ttf: $(FONTDIR)/static/InterDisplay-%Italic.ttf | $(FONTDIR)/static-hinted/InterDisplay-Italic.ttf $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) \
 	  --reference $(FONTDIR)/static-hinted/InterDisplay-Italic.ttf "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/InterDisplay-%.ttf: $(FONTDIR)/static/InterDisplay-%.ttf | $(FONTDIR)/static-hinted/InterDisplay-Regular.ttf $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) \
 	  --reference $(FONTDIR)/static-hinted/InterDisplay-Regular.ttf "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/Inter-%Italic.ttf: $(FONTDIR)/static/Inter-%Italic.ttf | $(FONTDIR)/static-hinted/Inter-Italic.ttf $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) \
 	  --reference $(FONTDIR)/static-hinted/Inter-Italic.ttf "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/Inter-%.ttf: $(FONTDIR)/static/Inter-%.ttf | $(FONTDIR)/static-hinted/Inter-Regular.ttf $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) \
 	  --reference $(FONTDIR)/static-hinted/Inter-Regular.ttf "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 
 $(FONTDIR)/var/.%.var.ttf: $(UFODIR)/%.var.designspace build/features_data | $(FONTDIR)/var venv
@@ -384,10 +392,6 @@ FBAKE_DISABLED += no_mac_entries
 FBAKE_DISABLED += smart_dropout
 # "The 'prep' table does not contain TrueType instructions enabling
 #  smart dropout control"
-
-FBAKE_DISABLED_STATIC += integer_ppem_if_hinted
-# "This is a hinted font, so it must have bit 3 set on the flags of the
-#  head table"
 
 # FBAKE_ARGS are common args for all fontbakery targets
 FBAKE_ARGS = \
