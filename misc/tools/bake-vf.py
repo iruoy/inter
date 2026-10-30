@@ -424,6 +424,10 @@ def main():
   # # fixup OS/2 table (set usWeightClass)
   # fixup_os2(ttfont)
 
+  # remove Macintosh name records. They're obsolete, and the renaming above
+  # only keeps the Windows records in sync.
+  ttfont["name"].removeNames(platformID=1)
+
   # save font
   outfile = args.output or args.input
   ttfont.save(outfile)
