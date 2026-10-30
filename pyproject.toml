@@ -8,10 +8,10 @@ dependencies = [
     "brotli==1.0.*",
     "fontbakery==0.10.*",
     "fontmake==3.9.*",
-    "gftools>=0.9.57",
     "glyphspkg==0.1.*",
     "psautohint==2.4.*",
     "skia-pathops==0.8.*",
+    "ttfautohint-py==0.5.*",
     "ufo2ft>=2.30.0",
 ]
 
