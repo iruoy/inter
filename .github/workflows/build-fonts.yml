@@ -1,5 +1,6 @@
 # Builds fonts either when a prerelease version tag (e.g. v1.2-foo)
-# is created, or when source is changed.
+# is created, or when source is changed on master.
+# Pull requests are tested by test.yml instead.
 #
 # When a version tag is created, a pre-release is automatically created.
 #
@@ -16,21 +17,12 @@ on:
       - Makefile
       - pyproject.toml
       - uv.lock
+      - .python-version
       - version.txt
       - misc/makezip2.sh
       - "misc/tools/**"
     tags:
       - "v*-*"
-  pull_request:
-    branches: [master]
-    paths:
-      - "src/**"
-      - Makefile
-      - pyproject.toml
-      - uv.lock
-      - version.txt
-      - misc/makezip2.sh
-      - "misc/tools/**"
   workflow_dispatch:
 
 defaults:
