@@ -166,7 +166,7 @@ endif
 
 $(FONTDIR)/static/%.otf: $(UFODIR)/%.ufo build/features_data | $(FONTDIR)/static venv
 	fontmake -u $< -o otf --output-path $@.tmp.otf $(FM_ARGS_2)
-	psautohint -o $@ $@.tmp.otf
+	otfautohint $@.tmp.otf -o $@
 	@rm $@.tmp.otf
 
 $(FONTDIR)/static/%.ttf: $(UFODIR)/%.ufo build/features_data | $(FONTDIR)/static venv
@@ -322,41 +322,72 @@ test_static: \
 FBAKE_DISABLED =
 FBAKE_DISABLED_STATIC =
 
-FBAKE_DISABLED += com.google.fonts/check/fontbakery_version
+FBAKE_DISABLED += fontbakery_version
 # Calls a server to see if there's a newer version of fontbakery and
 # FAILs if there is. This breaks reproducible builds.
 
-FBAKE_DISABLED += com.google.fonts/check/family/win_ascent_and_descent
+FBAKE_DISABLED += fontdata_namecheck
+# Looks up the family name on namecheck.fontdata.com. Depends on a web service
+# (whose response format changed, making the check crash), so not reproducible.
+
+FBAKE_DISABLED += family/win_ascent_and_descent
 # "FAIL OS/2.usWinAscent value should be equal or greater than 2269,
 #  but got 1984 instead"
 # "FAIL OS/2.usWinDescent value should be equal or greater than 660,
 #  but got 494 instead"
 
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/family/underline_thickness
+FBAKE_DISABLED_STATIC += opentype/family/underline_thickness
 # "Fonts have consistent underline thickness"
 # Inter explicitly have varying underline thickness, matching wght
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/contour_count
+FBAKE_DISABLED_STATIC += contour_count
 # This test is pedantic; generates warnings when the number of contours are different
 # than what is usually seen in other fonts. No real world impact.
 
 # The following test are minor issues, left enabled for the var tests
 # but disabled for the static tests to reduce noise
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/legacy_accents
+FBAKE_DISABLED_STATIC += legacy_accents
 # "Glyph <NAME> has a legacy accent component (hungarumlaut)"
 # TODO: improve the design of Hungar* composite glyphs to use marks
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/gdef_mark_chars
+FBAKE_DISABLED_STATIC += gdef_mark_chars
 # "Check mark characters are in GDEF mark glyph class"
 # "WARN The following mark characters could be in the GDEF mark glyph
 #  class: uni0488 (U+0488), uni0489 (U+0489), uni20DD (U+20DD), uni20DE (U+20DE)"
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/gdef_spacing_marks
+FBAKE_DISABLED_STATIC += gdef_spacing_marks
 # "Check glyphs in mark glyph class are non-spacing"
 # "WARN The following spacing glyphs may be in the GDEF mark glyph class by mistake:
 #  dotbelow (U+0323)
+
+FBAKE_DISABLED += case_mapping
+# "The following glyphs lack their case-swapping counterparts"
+# Needs new glyphs drawn, e.g. U+A7DC (capital of U+019B), U+2C65 (small of U+023A)
+
+FBAKE_DISABLED += name/family_and_style_max_length
+# "Name ID 1 'Inter Variable' plus STAT table style combination
+#  'Display ExtraLight' exceeds 31 characters"
+# Fixing this means renaming the family or the STAT style names.
+
+FBAKE_DISABLED_STATIC += opentype/STAT/ital_axis
+# "Ensure VFs have 'ital' STAT axis" -- also runs on static fonts, which have
+# no STAT table. The variable fonts pass it.
+
+FBAKE_DISABLED += base_has_width
+# "The following glyphs had zero advance width: uni0488 (U+0488), uni0489 (U+0489)"
+
+FBAKE_DISABLED += no_mac_entries
+# "Ensure font doesn't have Mac name table entries (platform=1)"
+
+FBAKE_DISABLED += smart_dropout
+# "The 'prep' table does not contain TrueType instructions enabling
+#  smart dropout control"
+
+FBAKE_DISABLED_STATIC += integer_ppem_if_hinted
+# "This is a hinted font, so it must have bit 3 set on the flags of the
+#  head table"
 
 # FBAKE_ARGS are common args for all fontbakery targets
 FBAKE_ARGS = \

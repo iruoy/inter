@@ -2,17 +2,16 @@
 name = "inter-build"
 version = "0.0.0"
 description = "Build toolchain for the Inter typeface"
-# fonttools follows NumPy's minimum Python schedule (NEP 29)
-requires-python = ">=3.8"
+requires-python = ">=3.15"
 dependencies = [
-    "brotli==1.0.*",
-    "fontbakery==0.10.*",
-    "fontmake==3.9.*",
-    "glyphspkg==0.1.*",
-    "psautohint==2.4.*",
-    "skia-pathops==0.8.*",
-    "ttfautohint-py==0.5.*",
-    "ufo2ft>=2.30.0",
+    "afdko>=5.0.1",
+    "brotli>=1.2.1",
+    "fontbakery>=1.1.0",
+    "fontmake>=3.12.2",
+    "glyphspkg>=0.2.1",
+    "skia-pathops>=0.9.2",
+    "ttfautohint-py>=0.6.1",
+    "ufo2ft>=3.10.0",
 ]
 
 [tool.uv]
