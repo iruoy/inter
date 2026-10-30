@@ -1,0 +1,19 @@
+[project]
+name = "inter-build"
+version = "0.0.0"
+description = "Build toolchain for the Inter typeface"
+requires-python = ">=3.15"
+dependencies = [
+    "afdko>=5.0.1",
+    "brotli>=1.2.1",
+    "fontbakery>=1.1.0",
+    "fontmake>=3.12.2",
+    "glyphspkg>=0.2.1",
+    "skia-pathops>=0.9.2",
+    "ttfautohint-py>=0.6.1",
+    "ufo2ft>=3.10.0",
+]
+
+[tool.uv]
+# This is a toolchain environment, not an installable package
+package = false

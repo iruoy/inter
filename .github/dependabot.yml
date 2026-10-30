@@ -1,0 +1,28 @@
+# Weekly update PRs for the GitHub Actions (pinned to commit SHAs), the
+# Python build tools (uv.lock) and the website's Ruby gems (docs/Gemfile.lock).
+# Each ecosystem's updates come as one PR.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      python-tools:
+        patterns: ["*"]
+
+  - package-ecosystem: bundler
+    directory: /docs
+    schedule:
+      interval: weekly
+    groups:
+      website-gems:
+        patterns: ["*"]

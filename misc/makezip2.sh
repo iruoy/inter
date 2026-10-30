@@ -60,7 +60,7 @@ cp build/fonts/var/InterVariable.woff2        "$ZIPDIR/web/InterVariable.woff2"
 cp build/fonts/var/InterVariable-Italic.woff2 "$ZIPDIR/web/InterVariable-Italic.woff2"
 cp misc/dist/inter.css                        "$ZIPDIR/web/"
 
-. build/venv/bin/activate
+. .venv/bin/activate
 python misc/tools/patch-version.py "$ZIPDIR/web/inter.css"
 
 mkdir -p "$ZIPDIR/extras/otf" \

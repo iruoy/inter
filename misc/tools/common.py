@@ -5,9 +5,9 @@ from os.path import dirname, abspath, join as pjoin
 import subprocess
 import time
 
-# patch PYTHONPATH to include $BASEDIR/build/venv/python/site-packages
+# patch PYTHONPATH to include $BASEDIR/.venv/python/site-packages
 BASEDIR = abspath(pjoin(dirname(__file__), os.pardir, os.pardir))
-VENVDIR = pjoin(BASEDIR, 'build', 'venv')
+VENVDIR = pjoin(BASEDIR, '.venv')
 sys.path.append(pjoin(VENVDIR, 'lib', 'python', 'site-packages'))
 
 PYVER = sys.version_info[0]

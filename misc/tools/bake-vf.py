@@ -14,15 +14,16 @@ How to debug/develop this script:
 
 2. after making changes, run script and inspect with ttx:
 
-  (. build/venv/bin/activate && mkdir -p build/bake &&
+  (. .venv/bin/activate && mkdir -p build/bake &&
     for f in build/fonts/var/.Inter-*.var.ttf; do
       python misc/tools/bake-vf.py "$f" -o build/bake/"$(basename "${f/.Inter/Inter}")"
     done)
-  (. build/venv/bin/activate && ttx -t STAT -i -f -s build/bake/Inter-*.var.ttf)
+  (. .venv/bin/activate && ttx -t STAT -i -f -s build/bake/Inter-*.var.ttf)
 
 """
 import sys, os, os.path, re, argparse
-from fontTools.ttLib import TTFont
+from fontTools.ttLib import TTFont, newTable
+from fontTools.ttLib.tables import ttProgram
 from fontTools.otlLib.builder import buildStatTable
 
 FLAG_DEFAULT = 0x2  # elidable value, effectively marks a location as default
@@ -167,9 +168,7 @@ def font_is_italic(ttfont):
 
 def set_full_name(font, fullName, fullNamePs):
   nameTable = font["name"]
-  nameTable.setName(fullName, FULL_NAME, 1, 0, 0)     # mac
   nameTable.setName(fullName, FULL_NAME, 3, 1, 0x409) # windows
-  nameTable.setName(fullNamePs, POSTSCRIPT_NAME, 1, 0, 0)     # mac
   nameTable.setName(fullNamePs, POSTSCRIPT_NAME, 3, 1, 0x409) # windows
 
 
@@ -307,7 +306,6 @@ def setFamilyName(font, nextFamilyName):
     varPSNamePrefix = remove_whitespace(nextFamilyName)
     if font_is_italic(font):
       varPSNamePrefix += 'Italic'
-    nameTable.setName(varPSNamePrefix, VAR_PS_NAME_PREFIX, 1, 0, 0)     # mac
     nameTable.setName(varPSNamePrefix, VAR_PS_NAME_PREFIX, 3, 1, 0x409) # windows
 
 
@@ -322,11 +320,27 @@ def gen_stat(ttfont):
   #buildStatTable(ttfont, stat_axes_format_2(font_is_italic(ttfont)))
   #
   # build a version 1.1 STAT table with format 1 and 3 records:
-  buildStatTable(ttfont, stat_axes_format_3(font_is_italic(ttfont)))
+  buildStatTable(ttfont, stat_axes_format_3(font_is_italic(ttfont)), macNames=False)
   #
   # build a version 1.2 STAT table with format 4 records:
   #locations = stat_locations(font_is_italic(ttfont))
   #buildStatTable(ttfont, STAT_AXES, locations=locations)
+
+
+def add_unhinted_rendering_tables(ttfont):
+  # The variable fonts are not hinted. Add a gasp table that smooths all sizes
+  # and a prep program that turns on smart dropout control, so they render
+  # well on Windows. Same as `gftools fix-nonhinting`.
+  if "fpgm" in ttfont:
+    return  # hinted font; leave alone
+  gasp = newTable("gasp")
+  gasp.gaspRange = {0xFFFF: 0x000F}
+  ttfont["gasp"] = gasp
+  program = ttProgram.Program()
+  program.fromAssembly(["PUSHW[]", "511", "SCANCTRL[]", "PUSHB[]", "4", "SCANTYPE[]"])
+  prep = newTable("prep")
+  prep.program = program
+  ttfont["prep"] = prep
 
 
 def check_fvar(ttfont):
@@ -400,12 +414,19 @@ def main():
   # build STAT table
   gen_stat(ttfont)
 
+  # gasp & prep tables for better rendering of unhinted fonts
+  add_unhinted_rendering_tables(ttfont)
+
   # check fvar table
   if not check_fvar(ttfont):
     sys.exit(1)
 
   # # fixup OS/2 table (set usWeightClass)
   # fixup_os2(ttfont)
+
+  # remove Macintosh name records. They're obsolete, and the renaming above
+  # only keeps the Windows records in sync.
+  ttfont["name"].removeNames(platformID=1)
 
   # save font
   outfile = args.output or args.input

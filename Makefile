@@ -5,7 +5,7 @@ endif
 SRCDIR   := $(abspath $(lastword $(MAKEFILE_LIST))/..)
 FONTDIR  := build/fonts
 UFODIR   := build/ufo
-VENVDIR  := $(SRCDIR)/build/venv
+VENVDIR  := $(SRCDIR)/.venv
 VERSION  := $(shell cat version.txt)
 MAKEFILE := $(lastword $(MAKEFILE_LIST))
 
@@ -166,7 +166,7 @@ endif
 
 $(FONTDIR)/static/%.otf: $(UFODIR)/%.ufo build/features_data | $(FONTDIR)/static venv
 	fontmake -u $< -o otf --output-path $@.tmp.otf $(FM_ARGS_2)
-	psautohint -o $@ $@.tmp.otf
+	otfautohint $@.tmp.otf -o $@
 	@rm $@.tmp.otf
 
 $(FONTDIR)/static/%.ttf: $(UFODIR)/%.ufo build/features_data | $(FONTDIR)/static venv
@@ -177,31 +177,39 @@ AUTOHINT_ARGS := --stem-width-mode=qqq --no-info
 
 $(FONTDIR)/static-hinted/Inter-Regular.ttf: $(FONTDIR)/static/Inter-Regular.ttf | $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/InterDisplay-Regular.ttf: $(FONTDIR)/static/InterDisplay-Regular.ttf | $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/Inter-Italic.ttf: $(FONTDIR)/static/Inter-Italic.ttf | $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/InterDisplay-Italic.ttf: $(FONTDIR)/static/InterDisplay-Italic.ttf | $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/InterDisplay-%Italic.ttf: $(FONTDIR)/static/InterDisplay-%Italic.ttf | $(FONTDIR)/static-hinted/InterDisplay-Italic.ttf $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) \
 	  --reference $(FONTDIR)/static-hinted/InterDisplay-Italic.ttf "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/InterDisplay-%.ttf: $(FONTDIR)/static/InterDisplay-%.ttf | $(FONTDIR)/static-hinted/InterDisplay-Regular.ttf $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) \
 	  --reference $(FONTDIR)/static-hinted/InterDisplay-Regular.ttf "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/Inter-%Italic.ttf: $(FONTDIR)/static/Inter-%Italic.ttf | $(FONTDIR)/static-hinted/Inter-Italic.ttf $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) \
 	  --reference $(FONTDIR)/static-hinted/Inter-Italic.ttf "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 $(FONTDIR)/static-hinted/Inter-%.ttf: $(FONTDIR)/static/Inter-%.ttf | $(FONTDIR)/static-hinted/Inter-Regular.ttf $(FONTDIR)/static-hinted venv
 	python -m ttfautohint $(AUTOHINT_ARGS) \
 	  --reference $(FONTDIR)/static-hinted/Inter-Regular.ttf "$<" "$@"
+	python misc/tools/fix-hinted-ttf.py "$@"
 
 
 $(FONTDIR)/var/.%.var.ttf: $(UFODIR)/%.var.designspace build/features_data | $(FONTDIR)/var venv
@@ -235,14 +243,6 @@ $(UFODIR):
 var: \
 	$(FONTDIR)/var/InterVariable.ttf \
 	$(FONTDIR)/var/InterVariable-Italic.ttf
-
-googlefonts: var
-	gftools fix-family $(FONTDIR)/var/*.ttf \
-	--rename-family "Inter" \
-	--include-source-fixes \
-	-o $(FONTDIR)/googlefonts;
-	gftools fontsetter $(FONTDIR)/googlefonts/Inter[opsz,wght].ttf src/googlefonts-fixes.yaml -o $(FONTDIR)/googlefonts/Inter[opsz,wght].ttf;
-	gftools fontsetter $(FONTDIR)/googlefonts/Inter-Italic[opsz,wght].ttf src/googlefonts-fixes.yaml -o $(FONTDIR)/googlefonts/Inter-Italic[opsz,wght].ttf;
 
 var_web: \
 	$(FONTDIR)/var/InterVariable.woff2 \
@@ -310,7 +310,7 @@ static_ttf: $(STATIC_FONTS_TTF)
 static_web: $(STATIC_FONTS_WEB)
 static_web_hinted: $(STATIC_FONTS_WEB_HINTED)
 
-all: var googlefonts static web static_otf
+all: var static web static_otf
 
 .PHONY: \
 	all var var_web web \
@@ -330,41 +330,58 @@ test_static: \
 FBAKE_DISABLED =
 FBAKE_DISABLED_STATIC =
 
-FBAKE_DISABLED += com.google.fonts/check/fontbakery_version
+FBAKE_DISABLED += fontbakery_version
 # Calls a server to see if there's a newer version of fontbakery and
 # FAILs if there is. This breaks reproducible builds.
 
-FBAKE_DISABLED += com.google.fonts/check/family/win_ascent_and_descent
+FBAKE_DISABLED += fontdata_namecheck
+# Looks up the family name on namecheck.fontdata.com. Depends on a web service
+# (whose response format changed, making the check crash), so not reproducible.
+
+FBAKE_DISABLED += family/win_ascent_and_descent
 # "FAIL OS/2.usWinAscent value should be equal or greater than 2269,
 #  but got 1984 instead"
 # "FAIL OS/2.usWinDescent value should be equal or greater than 660,
 #  but got 494 instead"
 
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/family/underline_thickness
+FBAKE_DISABLED_STATIC += opentype/family/underline_thickness
 # "Fonts have consistent underline thickness"
 # Inter explicitly have varying underline thickness, matching wght
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/contour_count
+FBAKE_DISABLED_STATIC += contour_count
 # This test is pedantic; generates warnings when the number of contours are different
 # than what is usually seen in other fonts. No real world impact.
 
 # The following test are minor issues, left enabled for the var tests
 # but disabled for the static tests to reduce noise
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/legacy_accents
+FBAKE_DISABLED_STATIC += legacy_accents
 # "Glyph <NAME> has a legacy accent component (hungarumlaut)"
 # TODO: improve the design of Hungar* composite glyphs to use marks
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/gdef_mark_chars
+FBAKE_DISABLED_STATIC += gdef_mark_chars
 # "Check mark characters are in GDEF mark glyph class"
 # "WARN The following mark characters could be in the GDEF mark glyph
 #  class: uni0488 (U+0488), uni0489 (U+0489), uni20DD (U+20DD), uni20DE (U+20DE)"
 
-FBAKE_DISABLED_STATIC += com.google.fonts/check/gdef_spacing_marks
+FBAKE_DISABLED_STATIC += gdef_spacing_marks
 # "Check glyphs in mark glyph class are non-spacing"
 # "WARN The following spacing glyphs may be in the GDEF mark glyph class by mistake:
 #  dotbelow (U+0323)
+
+FBAKE_DISABLED += case_mapping
+# "The following glyphs lack their case-swapping counterparts"
+# Needs new glyphs drawn, e.g. U+A7DC (capital of U+019B), U+2C65 (small of U+023A)
+
+FBAKE_DISABLED += name/family_and_style_max_length
+# "Name ID 1 'Inter Variable' plus STAT table style combination
+#  'Display ExtraLight' exceeds 31 characters"
+# Fixing this means renaming the family or the STAT style names.
+
+FBAKE_DISABLED_STATIC += opentype/STAT/ital_axis
+# "Ensure VFs have 'ital' STAT axis" -- also runs on static fonts, which have
+# no STAT table. The variable fonts pass it.
 
 # FBAKE_ARGS are common args for all fontbakery targets
 FBAKE_ARGS = \
@@ -429,7 +446,6 @@ zip_beta: \
 # - step2 runs tests, then makes a zip archive and updates the website (docs/ dir.)
 
 DIST_ZIP = build/release/Inter-${VERSION}.zip
-DIST_ZIP_GF = $(SRCDIR)/build/release/Inter-$(VERSION)-GoogleFonts.zip
 
 dist:
 	@echo "——————————————————————————————————————————————————————————————————"
@@ -447,19 +463,13 @@ dist:
 		printf "Press ENTER to continue or ^C to cancel " ; read X) || true
 	@#
 	$(MAKE) -f $(MAKEFILE) -j$(nproc) clean
-	$(MAKE) -f $(MAKEFILE) -j$(nproc) all googlefonts
+	$(MAKE) -f $(MAKEFILE) -j$(nproc) all
 	$(MAKE) -f $(MAKEFILE) -j$(nproc) test
-	$(MAKE) -f $(MAKEFILE) -j$(nproc) dist_zip dist_zip_gf dist_docs
+	$(MAKE) -f $(MAKEFILE) -j$(nproc) dist_zip dist_docs
 	$(MAKE) -f $(MAKEFILE) dist_postflight
 
 dist_zip: | venv
 	bash misc/makezip2.sh -reveal-in-finder "$(DIST_ZIP)"
-
-dist_zip_gf: | venv
-	cd "$(FONTDIR)/googlefonts" && zip -q -X -r "$(DIST_ZIP_GF)" *.ttf
-
-dist_gf: googlefonts
-	$(MAKE) -f $(MAKEFILE) dist_zip_gf
 
 dist_docs:
 	$(MAKE) -C docs -j$(nproc) dist
@@ -480,7 +490,6 @@ dist_postflight:
 	@echo "——————————————————————————————————————————————————————————————————"
 
 .PHONY: dist dist_preflight dist_step1 dist_step2 dist_zip dist_docs dist_postflight
-.PHONY: dist_zip_gf dist_gf
 
 
 # ---------------------------------------------------------------------------------
@@ -594,16 +603,15 @@ list:
 
 venv: $(VENVDIR)/config2.stamp
 
-$(VENVDIR)/config2.stamp: Pipfile.lock Pipfile
+$(VENVDIR)/config2.stamp: pyproject.toml uv.lock
 	@mkdir -p build
 	[ ! -f "$(VENVDIR)/config.stamp" ] || rm -rf "$(VENVDIR)"
-	[ -d "$(VENVDIR)" ] || python3 -m venv "$(VENVDIR)"
-	pip install pipenv==2023.8.28
-	pipenv install
+	uv sync --locked
 	touch $@
 
 venv-update:
-	pipenv update
+	uv lock --upgrade
+	uv sync
 
 reset: clean
 	rm -rf "$(VENVDIR)"
