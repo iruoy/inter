@@ -32,11 +32,11 @@ name = ital_gen;
 shapes = (
 {
 alignment = -1;
-pos = (-15,0);
+pos = (-19,0);
 ref = notequal;
 }
 );
-width = 1328;
+width = 1320;
 },
 {
 layerId = m008;

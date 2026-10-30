@@ -98,7 +98,7 @@ File index:
 
        :root { font-family: 'Inter', sans-serif; }
        @supports (font-variation-settings: normal) {
-         :root { font-family: 'Inter var', sans-serif; }
+         :root { font-family: 'InterVariable', sans-serif; font-optical-sizing: auto; }
        }
 
   There are many other ways of using Inter on the Web platform.

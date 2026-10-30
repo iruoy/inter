@@ -2,7 +2,7 @@
 
 Inter is a typeface carefully crafted & designed for computer screens.
 Inter features a tall x-height to aid in readability of mixed-case and lower-case text.
-Inter is a [variable font](https://rsms.me/inter/#variable) with
+Inter is a [variable font](https://en.wikipedia.org/wiki/Variable_font) with
 several [OpenType features](https://rsms.me/inter/#features), like contextual alternates that adjusts punctuation depending on the shape of surrounding glyphs, slashed zero for when you need to disambiguate "0" from "o", tabular numbers, etc.
 
 [**Download Inter font files…**](https://github.com/rsms/inter/releases/latest)
@@ -37,7 +37,7 @@ Using Inter on a web page:
 ```css
 :root { font-family: 'Inter', sans-serif; }
 @supports (font-variation-settings: normal) {
-  :root { font-family: 'Inter var', sans-serif; }
+  :root { font-family: 'InterVariable', sans-serif; font-optical-sizing: auto; }
 }
 ```
 
@@ -62,6 +62,7 @@ For web pages, there's an official [CDN distribution](https://rsms.me/inter/inte
 
 ## Notable uses of Inter
 
+- [Blender](https://blender.org/)
 - [ElementaryOS](https://elementary.io/)
 - [Figma](https://figma.com/)
 - [GitLab](https://gitlab.com/)
@@ -85,6 +86,7 @@ For web pages, there's an official [CDN distribution](https://rsms.me/inter/inte
 - [Open Runde](https://github.com/lauridskern/open-runde) is a rounded variant of Inter
 - [Interalia](https://github.com/Shavian-info/interalia) extends Inter with Shavian characters
 - [Raveo](https://github.com/jakubfoglar/raveo) is a "warmer version" of Inter
+- [Hyperlegible Sans](https://github.com/matthewlarn/hyperlegible-sans) is a legibility-focused version of Inter.
 
 
 ## Supporters & contributors
@@ -148,7 +150,7 @@ Inter can be classified as a geometric neo-grotesque, similar in style to Roboto
 
 - Rasterized at sizes below 12px, some stems—like the horizontal center of "E", "F", or vertical center of "m"—are drawn with two semi-opaque pixels instead of one solid. This is because we "prioritize" (optimize for) higher-density rasterizations. If we move these stems to an off-center position—so that they can be drawn sharply at e.g. 11px—text will be less legible at higher resolutions.
 
-Inter is a [variable font](https://rsms.me/inter/#variable) and is in addition also distributed as a set of traditional distinct font files in the following styles:
+Inter is a [variable font](https://en.wikipedia.org/wiki/Variable_font) and is in addition also distributed as a set of traditional distinct font files in the following styles:
 
 | Roman (upright) name | Italic name          | Weight
 | -------------------- | -------------------- | ------------

@@ -308,3 +308,57 @@ sub bracketleft.case @All @All @All @All @All @All bracketright' by bracketright
 
 # END case
 # -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
+# BEGIN case, second pass
+
+# @CASE_L/@CASE_R minus brackets, which must keep matching their counterpart
+# (e.g. "(x+1)*2", "x(*****A)")
+@CASE_L_BACK = [
+  asterisk at multiply minus plus plusminus
+  divide equal notequal endash figuredash emdash hyphen bullet openbullet
+  hyphenbullet trianglebullet blackleftbullet blackrightbullet
+  blackSmallSquare leftArrow leftLongArrow leftLongArrow2 leftDoubleArrow
+  leftLongDoubleArrow rightArrow rightLongArrow rightLongArrow2
+  rightDoubleArrow rightLongDoubleArrow leftRightArrow leftRightLongArrow
+  leftRightDoubleArrow leftRightLongDoubleArrow northEastArrow southEastArrow
+  southWestArrow northWestArrow colon approxequal asciitilde less greater
+  lessequal greaterequal
+];
+@CASE_R_BACK = [
+  asterisk.case at.case
+  multiply.case minus.case plus.case plusminus.case divide.case equal.case
+  notequal.case endash.case figuredash.case emdash.case hyphen.case
+  bullet.case openbullet.case hyphenbullet.case trianglebullet.case
+  blackleftbullet.case blackrightbullet.case blackSmallSquare.case
+  leftArrow.case leftLongArrow.case leftLongArrow2.case leftDoubleArrow.case
+  leftLongDoubleArrow.case rightArrow.case rightLongArrow.case
+  rightLongArrow2.case rightDoubleArrow.case rightLongDoubleArrow.case
+  leftRightArrow.case leftRightLongArrow.case leftRightDoubleArrow.case
+  leftRightLongDoubleArrow.case northEastArrow.case southEastArrow.case
+  southWestArrow.case northWestArrow.case colon.case approxequal.case
+  asciitilde.case less.case greater.case lessequal.case greaterequal.case
+];
+
+# Case forms that are valid right-hand context for propagation. Closing
+# brackets are excluded since their case is decided by the opening bracket
+# (lines above), not by what follows them, e.g. "(Abc -)".
+@CASE_CTX_R = [ @CASE_R_BACK parenleft.case bracketleft.case braceleft.case ];
+
+# Reverse chaining substitution is applied right-to-left, so the context to the
+# right of the current glyph has already been processed. This lets case forms
+# propagate backwards across runs of any length, e.g. "******999" (#737, #826),
+# and lets "(3" count as cap-height context, e.g. "2 * (3 * 4) * 5" (#863).
+lookup calt_case_backprop {
+  # never propagate into "x-" or "x--" (mirrors "ignore sub @LC @CASE_L' @UC" etc.)
+  rsub @LC @CASE_L_BACK' by @CASE_L_BACK;
+  rsub @LC @CASE_L @CASE_L_BACK' by @CASE_L_BACK;
+  # "2 * (3", "(3) * 4", "(3) *4", "(3)* 4"
+  rsub [@UC @CASE_R] @Whitespace @CASE_L_BACK' @Whitespace [@UC @CASE_CTX_R] by @CASE_R_BACK;
+  rsub [@UC @CASE_R] @Whitespace @CASE_L_BACK' [@UC @CASE_CTX_R] by @CASE_R_BACK;
+  rsub [@UC @CASE_R] @CASE_L_BACK' @Whitespace [@UC @CASE_CTX_R] by @CASE_R_BACK;
+  # backwards cascade, e.g. "******999"
+  rsub @CASE_L_BACK' @CASE_CTX_R by @CASE_R_BACK;
+} calt_case_backprop;
+
+# END case, second pass
+# -------------------------------------------------------------------------------------

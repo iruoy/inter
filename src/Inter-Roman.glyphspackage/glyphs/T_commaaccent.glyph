@@ -88,5 +88,6 @@ ref = cedillacomb;
 width = 1206;
 }
 );
+production = uni0162;
 unicode = 354;
 }

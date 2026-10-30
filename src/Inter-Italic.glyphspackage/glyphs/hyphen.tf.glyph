@@ -29,11 +29,11 @@ layerId = "11F4534A-B963-4AB5-820F-DAF9A20CD933";
 name = ital_gen;
 shapes = (
 {
-pos = (190,0);
+pos = (186,0);
 ref = hyphen;
 }
 );
-width = 1328;
+width = 1320;
 },
 {
 layerId = m008;
